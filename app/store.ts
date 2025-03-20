@@ -13,13 +13,17 @@ interface ChatPosition {
 
 interface UiState {
   isChatOpen: boolean;
-  setIsChatOpen: (isChatOpen: boolean | ((prev: boolean) => boolean)) => void;
-  chatSize: ChatSize;
-  setChatSize: (chatSize: ChatSize | ((prev: ChatSize) => ChatSize)) => void;
-  chatPosition: ChatPosition;
-  setChatPosition: (
-    chatPosition: ChatPosition | ((prev: ChatPosition) => ChatPosition)
-  ) => void;
+  chatSize: { width: number; height: number };
+  chatPosition: { x: number; y: number };
+  searchQuery: string;
+  searchSuggestions: Array<{ symbol: string; name: string; sector: string }>;
+  showSuggestions: boolean;
+  setIsChatOpen: (isOpen: boolean | ((prev: boolean) => boolean)) => void;
+  setChatSize: (size: ChatSize | ((prev: ChatSize) => ChatSize)) => void;
+  setChatPosition: (position: ChatPosition | ((prev: ChatPosition) => ChatPosition)) => void;
+  setSearchQuery: (query: string) => void;
+  setSearchSuggestions: (suggestions: Array<{ symbol: string; name: string; sector: string }>) => void;
+  setShowSuggestions: (show: boolean) => void;
 }
 
 const INITIAL_CHAT_WIDTH = 400;
@@ -29,6 +33,14 @@ const useUiStore = create<UiState>()(
   persist(
     (set) => ({
       isChatOpen: false,
+      chatSize: { width: INITIAL_CHAT_WIDTH, height: INITIAL_CHAT_HEIGHT },
+      chatPosition: {
+        x: window.innerWidth - INITIAL_CHAT_WIDTH - 20,
+        y: window.innerHeight - INITIAL_CHAT_HEIGHT - 20
+      },
+      searchQuery: "",
+      searchSuggestions: [],
+      showSuggestions: false,
       setIsChatOpen: (value) =>
         set((state) => ({
           isChatOpen:
@@ -44,19 +56,16 @@ const useUiStore = create<UiState>()(
               ? (value as (prev: ChatSize) => ChatSize)(state.chatSize)
               : value
         })),
-      chatPosition: {
-        x: window.innerWidth - INITIAL_CHAT_WIDTH - 20,
-        y: window.innerHeight - INITIAL_CHAT_HEIGHT - 20
-      },
       setChatPosition: (value) =>
         set((state) => ({
           chatPosition:
             typeof value === "function"
-              ? (value as (prev: ChatPosition) => ChatPosition)(
-                  state.chatPosition
-                )
+              ? (value as (prev: ChatPosition) => ChatPosition)(state.chatPosition)
               : value
-        }))
+        })),
+      setSearchQuery: (query) => set({ searchQuery: query }),
+      setSearchSuggestions: (suggestions) => set({ searchSuggestions: suggestions }),
+      setShowSuggestions: (show) => set({ showSuggestions: show })
     }),
     {
       name: "ui-store"
