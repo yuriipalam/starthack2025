@@ -1,6 +1,8 @@
+import { ScrollArea } from "@/ui/scroll-area";
+
 export function NewsPanel({ news }: { news: any[] }) {
   return (
-    <div className="max-h-[300px] overflow-auto rounded-md bg-zinc-900 p-2">
+    <ScrollArea className="max-h-[300px] rounded-md bg-zinc-900 p-2">
       <div className="mb-2 flex items-center justify-between">
         <h2 className="text-sm font-semibold">Market News</h2>
         <button className="text-xs text-zinc-400 hover:text-zinc-200">
@@ -23,6 +25,6 @@ export function NewsPanel({ news }: { news: any[] }) {
           </div>
         ))}
       </div>
-    </div>
+    </ScrollArea>
   );
 }

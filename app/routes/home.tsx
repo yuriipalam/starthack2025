@@ -1,5 +1,6 @@
 import type { Route } from "./+types/home";
 import { StockDashboard } from "@/components/stock-dashboard/stock-dashboard";
+import { AiChat } from "@/components/ai-chat/ai-chat";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -12,7 +13,7 @@ export default function Home() {
   return (
     <div className="relative flex min-h-screen flex-col bg-zinc-950 text-zinc-100">
       <StockDashboard />
-      <div className="absolute right-4 bottom-4 size-5 rounded-full bg-red-500"></div>
+      <AiChat />
     </div>
   );
 }
