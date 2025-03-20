@@ -6,22 +6,57 @@ import { useUiStore } from "@/store";
 
 // Mock stock data for autocomplete
 const mockStocks = [
-  { symbol: "AAPL", name: "Apple Inc.", sector: "Technology" },
-  { symbol: "GOOGL", name: "Alphabet Inc.", sector: "Technology" },
-  { symbol: "MSFT", name: "Microsoft Corporation", sector: "Technology" },
-  { symbol: "AMZN", name: "Amazon.com Inc.", sector: "Consumer Discretionary" },
-  { symbol: "META", name: "Meta Platforms Inc.", sector: "Technology" },
-  { symbol: "TSLA", name: "Tesla Inc.", sector: "Automotive" },
-  { symbol: "NVDA", name: "NVIDIA Corporation", sector: "Technology" },
-  { symbol: "JPM", name: "JPMorgan Chase & Co.", sector: "Financial" },
-  { symbol: "V", name: "Visa Inc.", sector: "Financial" },
-  { symbol: "WMT", name: "Walmart Inc.", sector: "Retail" }
+  { name: "Apple", sector: "Technology" },
+  { name: "Google", sector: "Technology" },
+  { name: "Microsoft", sector: "Technology" },
+  { name: "Amazon", sector: "Consumer Discretionary" },
+  { name: "Meta", sector: "Technology" },
+  { name: "Tesla", sector: "Automotive" },
+  { name: "NVIDIA", sector: "Technology" },
+  { name: "JPMorgan", sector: "Financial" },
+  { name: "Visa", sector: "Financial" },
+  { name: "Walmart", sector: "Retail" },
+  { name: "Johnson & Johnson", sector: "Healthcare" },
+  { name: "Procter & Gamble", sector: "Consumer Goods" },
+  { name: "Mastercard", sector: "Financial" },
+  { name: "Home Depot", sector: "Retail" },
+  { name: "Chevron", sector: "Energy" },
+  { name: "Coca-Cola", sector: "Consumer Goods" },
+  { name: "Pfizer", sector: "Healthcare" },
+  { name: "Bank of America", sector: "Financial" },
+  { name: "Pepsi", sector: "Consumer Goods" },
+  { name: "Thermo Fisher", sector: "Healthcare" }
 ];
+
+const whyQuestions = [
+  "stocks go up?",
+  "stocks go down?",
+  "stock price is high?",
+  "stock price is low?",
+  "stock is volatile?",
+  "stock is trending?",
+  "stock is popular?",
+  "stock is risky?",
+  "stock is a good investment?",
+  "stock is performing well?"
+];
+
+interface StockSuggestion {
+  name: string;
+  sector: string;
+}
+
+interface WhyQuestionSuggestion {
+  name: string;
+  question: string;
+}
+
+type Suggestion = StockSuggestion | WhyQuestionSuggestion;
 
 interface InputCopilotProps {
   value: string;
   onChange: (value: string) => void;
-  onSelect?: (stock: { symbol: string; name: string; sector: string }) => void;
+  onSelect?: (suggestion: Suggestion) => void;
   placeholder?: string;
   className?: string;
 }
@@ -64,14 +99,31 @@ export function InputCopilot({
     if (newValue.startsWith("@")) {
       const searchTerm = newValue.slice(1).toLowerCase();
       const filteredStocks = mockStocks.filter(
-        (stock) =>
-          stock.symbol.toLowerCase().includes(searchTerm) ||
-          stock.name.toLowerCase().includes(searchTerm) ||
-          stock.sector.toLowerCase().includes(searchTerm)
+        (stock) => stock.name.toLowerCase().includes(searchTerm)
       );
-      setSearchSuggestions(filteredStocks);
+      setSearchSuggestions(filteredStocks as StockSuggestion[]);
       setShowSuggestions(true);
       setSelectedIndex(-1);
+    } else if (newValue.toLowerCase().startsWith("why ")) {
+      const searchTerm = newValue.slice(4).toLowerCase();
+      const matchingStocks = mockStocks.filter(
+        (stock) => stock.name.toLowerCase().includes(searchTerm)
+      );
+      
+      if (matchingStocks.length > 0) {
+        const suggestions = matchingStocks.flatMap(stock => 
+          whyQuestions.map(question => ({
+            name: stock.name,
+            question: question
+          }))
+        );
+        setSearchSuggestions(suggestions as WhyQuestionSuggestion[]);
+        setShowSuggestions(true);
+        setSelectedIndex(-1);
+      } else {
+        setShowSuggestions(false);
+        setSearchSuggestions([]);
+      }
     } else {
       setShowSuggestions(false);
       setSearchSuggestions([]);
@@ -106,15 +158,19 @@ export function InputCopilot({
     }
   };
 
-  const handleSuggestionSelect = (stock: { symbol: string; name: string; sector: string }) => {
-    onChange(`@${stock.symbol} `);
+  const handleSuggestionSelect = (suggestion: Suggestion) => {
+    if ('question' in suggestion) {
+      onChange(`why ${suggestion.name} ${suggestion.question}`);
+    } else {
+      onChange(`@${suggestion.name} `);
+    }
     setShowSuggestions(false);
     setSearchSuggestions([]);
-    onSelect?.(stock);
+    onSelect?.(suggestion);
   };
 
   return (
-    <div className="relative" ref={inputRef}>
+    <div className="relative flex-1" ref={inputRef}>
       <Input
         value={value}
         onChange={handleInputChange}
@@ -124,25 +180,28 @@ export function InputCopilot({
       />
       {showSuggestions && searchSuggestions.length > 0 && (
         <div className="absolute bottom-full left-0 right-0 mb-2 max-h-48 overflow-y-auto rounded-md border bg-popover shadow-md w-full min-w-[300px]">
-          {searchSuggestions.map((stock, index) => (
+          {searchSuggestions.map((suggestion, index) => (
             <button
-              key={stock.symbol}
+              key={'question' in suggestion ? `${suggestion.name}-${suggestion.question}` : suggestion.name}
               className={cn(
                 "flex w-full items-center justify-between gap-2 px-3 py-2 text-sm hover:bg-accent whitespace-nowrap",
                 index === selectedIndex && "bg-accent"
               )}
-              onClick={() => handleSuggestionSelect(stock)}
+              onClick={() => handleSuggestionSelect(suggestion)}
             >
               <div className="flex items-center gap-2 min-w-0">
                 <TrendingUp className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                <span className="font-medium truncate">{stock.symbol}</span>
+                <span className="font-medium truncate">
+                  {'question' in suggestion ? `why ${suggestion.name} ${suggestion.question}` : suggestion.name}
+                </span>
               </div>
               <div className="flex flex-col items-end min-w-0">
-                <span className="text-xs font-medium truncate">{stock.name}</span>
-                <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Building2 className="h-3 w-3 flex-shrink-0" />
-                  <span className="truncate">{stock.sector}</span>
-                </span>
+                {!('question' in suggestion) && (
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Building2 className="h-3 w-3 flex-shrink-0" />
+                    <span className="truncate">{suggestion.sector}</span>
+                  </span>
+                )}
               </div>
             </button>
           ))}
