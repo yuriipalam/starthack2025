@@ -94,8 +94,6 @@ export default [
       "build",
       "dist",
       "tsconfig.json",
-      "postcss.config.js",
-      "tailwind.config.ts",
       "prettier.config.js",
       "!**/.server",
       "!**/.client"
