@@ -7,7 +7,7 @@ export function Header() {
   const setIsChatOpen = useUiStore((state) => state.setIsChatOpen);
 
   return (
-    <header className="border-b border-zinc-800 bg-zinc-900 p-2">
+    <header className="fixed right-0 left-0 border-b border-zinc-800 bg-zinc-900 p-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <h1 className="text-primary text-xl font-bold">SIX</h1>

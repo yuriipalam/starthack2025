@@ -13,6 +13,14 @@ import {
   watchlistData,
   newsData
 } from "@/lib/mock-data";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from "@/ui/tooltip";
+import { ArrowRightIcon, BotMessageSquare } from "lucide-react";
+import { Button } from "@/ui/button";
 
 export function StockDashboard() {
   const [selectedStock, setSelectedStock] = useState(stockData[0]);
@@ -23,15 +31,48 @@ export function StockDashboard() {
   };
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex flex-col">
       <Header />
-      <div className="grid flex-grow grid-cols-1 gap-2 overflow-hidden p-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="mt-[48px] grid flex-grow grid-cols-1 gap-2 overflow-hidden p-2 md:grid-cols-3 lg:grid-cols-4">
         <div className="flex flex-col gap-2 md:col-span-2 lg:col-span-3">
           <MarketOverview indices={marketIndices} />
           <div className="flex-grow rounded-md bg-zinc-900 p-2">
             <div className="mb-2 flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold">{selectedStock.symbol}</h2>
+                <div className="flex items-center">
+                  <h2 className="text-lg font-bold">{selectedStock.symbol}</h2>
+                  <TooltipProvider delayDuration={500}>
+                    <Tooltip>
+                      <TooltipTrigger className="ml-2">
+                        <BotMessageSquare className="hover:text-primary size-4 cursor-pointer transition-colors" />{" "}
+                      </TooltipTrigger>
+                      <TooltipContent
+                        className="bg-background flex flex-col items-start gap-2"
+                        align="start"
+                        side="right"
+                      >
+                        <Button variant="ghost" size="sm">
+                          Explain the stock price of {selectedStock.symbol}{" "}
+                          <ArrowRightIcon />
+                        </Button>
+                        <Button variant="ghost" size="sm">
+                          Why does the stock price of {selectedStock.symbol}{" "}
+                          keep going up?
+                          <ArrowRightIcon />
+                        </Button>
+                        <Button variant="ghost" size="sm">
+                          What is the forecast for {selectedStock.symbol}?{" "}
+                          <ArrowRightIcon />
+                        </Button>
+                        <Button variant="ghost" size="sm">
+                          When did {selectedStock.symbol} go public as IPO?{" "}
+                          <ArrowRightIcon />
+                        </Button>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+
                 <div className="flex items-center gap-2">
                   <span className="text-xl font-semibold">
                     ${selectedStock.price.toFixed(2)}
