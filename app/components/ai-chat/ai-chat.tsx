@@ -9,29 +9,28 @@ const AiChat = () => {
   const setChatPosition = useUiStore((state) => state.setChatPosition);
 
   const dragRef = useRef<HTMLDivElement>(null);
-  const isDragging = useRef(false);
-  const handleMouseDown = (event: any) => {
-    if (event.target !== dragRef.current) {
-      return;
-    }
-    isDragging.current = true;
+
+  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.target !== dragRef.current) return;
+
     if (dragRef.current) {
       dragRef.current.style.cursor = "grabbing";
     }
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
   };
-  const handleMouseUp = (event: any) => {
-    if (event.target !== dragRef.current) {
-      return;
-    }
-    isDragging.current = false;
+
+  const handleMouseUp = () => {
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
+
     if (dragRef.current) {
       dragRef.current.style.cursor = "grab";
     }
   };
-  const handleMouseMove = (event: any) => {
-    if (!isDragging.current || !dragRef.current) {
-      return;
-    }
+
+  const handleMouseMove = (event: MouseEvent) => {
     setChatPosition((prev) => ({
       x: prev.x + event.movementX,
       y: prev.y + event.movementY
@@ -53,9 +52,6 @@ const AiChat = () => {
       }}
       ref={dragRef}
       onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
     >
       <div
         className="size-full cursor-default"
