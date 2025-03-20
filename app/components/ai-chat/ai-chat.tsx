@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useUiStore } from "@/store";
 import { cn } from "@/lib/utils";
 import { Send, X } from "lucide-react";
@@ -13,10 +13,9 @@ const AiChat = () => {
   const { width, height } = useUiStore((state) => state.chatSize);
   const { x, y } = useUiStore((state) => state.chatPosition);
   const setChatPosition = useUiStore((state) => state.setChatPosition);
-  const [input, setInput] = useState("");
+  const resetChatPosition = useUiStore((state) => state.resetChatPosition);
 
   const dragRef = useRef<HTMLDivElement>(null);
-
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.target !== dragRef.current) return;
 
@@ -27,7 +26,6 @@ const AiChat = () => {
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
   };
-
   const handleMouseUp = () => {
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
@@ -36,7 +34,6 @@ const AiChat = () => {
       dragRef.current.style.cursor = "grab";
     }
   };
-
   const handleMouseMove = (event: MouseEvent) => {
     setChatPosition((prev) => ({
       x: prev.x + event.movementX,
@@ -68,6 +65,7 @@ const AiChat = () => {
   ];
   const [messages, setMessages] = useState<MessageProps[]>(initialMessages);
 
+  const [input, setInput] = useState("");
   const handleSendMessage = () => {
     if (!input.trim()) return;
 
@@ -86,7 +84,6 @@ const AiChat = () => {
       ]);
     }, 1000);
   };
-
   const handleStockSelect = (stock: {
     symbol: string;
     name: string;
@@ -94,6 +91,18 @@ const AiChat = () => {
   }) => {
     console.log("Selected stock:", stock);
   };
+
+  useEffect(() => {
+    const handleResize = () => {
+      resetChatPosition();
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  });
 
   return (
     <div
@@ -120,10 +129,10 @@ const AiChat = () => {
         <X className="text-foreground" />
       </Button>
       <div className="size-full cursor-default">
-        <ScrollArea className="relative h-full pb-5">
-          <div className="mr-3.5 flex flex-1 flex-col gap-5">
-            {messages.map((message) => (
-              <Message {...message} />
+        <ScrollArea className="relative h-full">
+          <div className="mr-3.5 mb-2 flex flex-1 flex-col gap-5">
+            {messages.map((message, index) => (
+              <Message key={index} {...message} />
             ))}
           </div>
         </ScrollArea>

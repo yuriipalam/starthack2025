@@ -32,6 +32,7 @@ interface UiState {
   setChatPosition: (
     chatPosition: ChatPosition | ((prev: ChatPosition) => ChatPosition)
   ) => void;
+  resetChatPosition: () => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   searchSuggestions: Suggestion[];
@@ -75,6 +76,13 @@ const useUiStore = create<UiState>()(
                 )
               : value
         })),
+      resetChatPosition: () =>
+        set({
+          chatPosition: {
+            x: window.innerWidth - INITIAL_CHAT_WIDTH - 20,
+            y: window.innerHeight - INITIAL_CHAT_HEIGHT - 20
+          }
+        }),
       searchQuery: "",
       setSearchQuery: (query) => set({ searchQuery: query }),
       searchSuggestions: [],
