@@ -96,8 +96,10 @@ export function InputCopilot({
     onChange(newValue);
     setSearchQuery(newValue);
 
-    if (newValue.startsWith("@")) {
-      const searchTerm = newValue.slice(1).toLowerCase();
+    // Check if there's an @ symbol anywhere in the string
+    const atSymbolIndex = newValue.lastIndexOf('@');
+    if (atSymbolIndex !== -1) {
+      const searchTerm = newValue.slice(atSymbolIndex + 1).toLowerCase();
       const filteredStocks = mockStocks.filter(
         (stock) => stock.name.toLowerCase().includes(searchTerm)
       );
@@ -107,7 +109,7 @@ export function InputCopilot({
     } else if (newValue.toLowerCase().startsWith("why ")) {
       const searchTerm = newValue.slice(4).toLowerCase();
       const matchingStocks = mockStocks.filter(
-        (stock) => stock.name.toLowerCase().includes(searchTerm)
+        (stock) => stock.name.toLowerCase() === searchTerm
       );
       
       if (matchingStocks.length > 0) {
@@ -161,11 +163,31 @@ export function InputCopilot({
   const handleSuggestionSelect = (suggestion: Suggestion) => {
     if ('question' in suggestion) {
       onChange(`why ${suggestion.name} ${suggestion.question}`);
+      setShowSuggestions(false);
+      setSearchSuggestions([]);
     } else {
-      onChange(`@${suggestion.name} `);
+      // Find the last @ symbol position
+      const atSymbolIndex = value.lastIndexOf('@');
+      if (atSymbolIndex !== -1) {
+        // Replace everything after the @ symbol with the selected company
+        const newValue = value.slice(0, atSymbolIndex) + `@${suggestion.name} `;
+        onChange(newValue);
+        
+        // If this was after "why", show why questions
+        if (newValue.toLowerCase().startsWith("why ")) {
+          const suggestions = whyQuestions.map(question => ({
+            name: suggestion.name,
+            question: question
+          }));
+          setSearchSuggestions(suggestions as WhyQuestionSuggestion[]);
+          setShowSuggestions(true);
+          setSelectedIndex(-1);
+        } else {
+          setShowSuggestions(false);
+          setSearchSuggestions([]);
+        }
+      }
     }
-    setShowSuggestions(false);
-    setSearchSuggestions([]);
     onSelect?.(suggestion);
   };
 
