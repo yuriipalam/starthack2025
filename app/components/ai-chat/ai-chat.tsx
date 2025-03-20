@@ -1,15 +1,19 @@
 import React, { useRef, useState } from "react";
 import { useUiStore } from "@/store";
 import { cn } from "@/lib/utils";
+import { Send, X } from "lucide-react";
+import { Button } from "@/ui/button";
+import Message, { type MessageProps } from "@/components/ai-chat/message";
+import { ScrollArea } from "@/ui/scroll-area";
 import { InputCopilot } from "./input-copilot";
 
 const AiChat = () => {
   const isChatOpen = useUiStore((state) => state.isChatOpen);
+  const setIsChatOpen = useUiStore((state) => state.setIsChatOpen);
   const { width, height } = useUiStore((state) => state.chatSize);
   const { x, y } = useUiStore((state) => state.chatPosition);
   const setChatPosition = useUiStore((state) => state.setChatPosition);
-  const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<Array<{ role: "user" | "assistant"; content: string }>>([]);
+  const [input, setInput] = useState("");
 
   const dragRef = useRef<HTMLDivElement>(null);
 
@@ -34,30 +38,61 @@ const AiChat = () => {
   };
 
   const handleMouseMove = (event: MouseEvent) => {
-    setChatPosition({
-      x: x + event.movementX,
-      y: y + event.movementY
-    });
+    setChatPosition((prev) => ({
+      x: prev.x + event.movementX,
+      y: prev.y + event.movementY
+    }));
   };
 
-  const handleStockSelect = (stock: { symbol: string; name: string; sector: string }) => {
-    console.log("Selected stock:", stock);
-  };
+  const initialMessages: MessageProps[] = [
+    {
+      sender: "user",
+      content: "Why NVIDIA goes down?"
+    },
+    {
+      sender: "ai",
+      content:
+        "Because China created a new AI which doesn't need NVIDIA's graphic cards to be as fast as the competitors. They basically provide the same performance with lower cost."
+    },
+    {
+      sender: "user",
+      content: Array.from(Array(80).keys())
+        .map(() => "Some long question")
+        .join(" ")
+    },
+    {
+      sender: "ai",
+      content: "",
+      isPending: true
+    }
+  ];
+  const [messages, setMessages] = useState<MessageProps[]>(initialMessages);
 
   const handleSendMessage = () => {
-    if (!message.trim()) return;
+    if (!input.trim()) return;
 
-    const newMessage = { role: "user" as const, content: message };
+    const newMessage = { sender: "user" as const, content: input.trim() };
     setMessages((prev) => [...prev, newMessage]);
-    setMessage("");
+    setInput("");
 
     // TODO: Implement actual AI response
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "I'm here to help! What would you like to know?" }
+        {
+          sender: "ai",
+          content: "I'm here to help! What would you like to know?"
+        }
       ]);
     }, 1000);
+  };
+
+  const handleStockSelect = (stock: {
+    symbol: string;
+    name: string;
+    sector: string;
+  }) => {
+    console.log("Selected stock:", stock);
   };
 
   return (
@@ -66,7 +101,7 @@ const AiChat = () => {
         isChatOpen
           ? "visible opacity-100"
           : "pointer-events-none invisible opacity-0",
-        "bg-popover border-border fixed flex flex-col rounded-xl border p-5"
+        "bg-popover border-border fixed rounded-xl border px-6 py-10 shadow-lg"
       )}
       style={{
         width: `${width}px`,
@@ -76,54 +111,43 @@ const AiChat = () => {
       ref={dragRef}
       onMouseDown={handleMouseDown}
     >
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-2 right-2 size-6 cursor-pointer"
+        onClick={() => setIsChatOpen(false)}
+      >
+        <X className="text-foreground" />
+      </Button>
+      <div className="size-full cursor-default">
+        <ScrollArea className="relative h-full pb-5">
+          <div className="mr-3.5 flex flex-1 flex-col gap-5">
+            {messages.map((message) => (
+              <Message {...message} />
+            ))}
+          </div>
+        </ScrollArea>
+      </div>
       <div
-        className="size-full cursor-default flex flex-col"
+        className="flex size-full cursor-default flex-col"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex-1 overflow-y-auto mb-4 space-y-4">
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={cn(
-                "p-3 rounded-lg max-w-[80%]",
-                msg.role === "user"
-                  ? "bg-primary text-primary-foreground ml-auto"
-                  : "bg-muted"
-              )}
-            >
-              {msg.content}
-            </div>
-          ))}
-        </div>
-
         <div className="flex gap-2">
           <InputCopilot
-            value={message}
-            onChange={setMessage}
+            value={input}
+            onChange={setInput}
             onSelect={handleStockSelect}
             placeholder="Type your message... Use @ to search stocks"
             className="flex-1"
           />
-          <button
-            className="p-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          <Button
+            className=""
             onClick={handleSendMessage}
-            disabled={!message.trim()}
+            disabled={!input.trim()}
+            size="icon"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M22 2L11 13" />
-              <path d="M22 2L15 22L11 13L2 9L22 2Z" />
-            </svg>
-          </button>
+            <Send />
+          </Button>
         </div>
       </div>
     </div>
