@@ -10,13 +10,19 @@ const AiChat = () => {
 
   const dragRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
-  const handleMouseDown = () => {
+  const handleMouseDown = (event: any) => {
+    if (event.target !== dragRef.current) {
+      return;
+    }
     isDragging.current = true;
     if (dragRef.current) {
       dragRef.current.style.cursor = "grabbing";
     }
   };
-  const handleMouseUp = () => {
+  const handleMouseUp = (event: any) => {
+    if (event.target !== dragRef.current) {
+      return;
+    }
     isDragging.current = false;
     if (dragRef.current) {
       dragRef.current.style.cursor = "grab";
@@ -38,7 +44,7 @@ const AiChat = () => {
         isChatOpen
           ? "visible opacity-100"
           : "pointer-events-none invisible opacity-0",
-        "fixed"
+        "bg-popover border-border fixed rounded-xl border p-5"
       )}
       style={{
         width: `${width}px`,
@@ -51,7 +57,12 @@ const AiChat = () => {
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
-      <div className="bg-popover border-border h-[500px] w-[400px] rounded-xl border"></div>
+      <div
+        className="size-full cursor-default"
+        onClick={(event) => event.stopPropagation()}
+      >
+        Dude
+      </div>
     </div>
   );
 };
