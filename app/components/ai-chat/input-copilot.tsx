@@ -1,32 +1,19 @@
 import React, { useRef, useEffect } from "react";
 import { Input } from "@/ui/input";
-import { TrendingUp, Building2 } from "lucide-react";
+import { TrendingUp, Building2, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useUiStore } from "@/store";
+import { useUiStore, type Suggestion } from "@/store";
+import { stockData } from "@/lib/mock-data";
 
-// Mock stock data for autocomplete
-const mockStocks = [
-  { name: "Apple", sector: "Technology" },
-  { name: "Google", sector: "Technology" },
-  { name: "Microsoft", sector: "Technology" },
-  { name: "Amazon", sector: "Consumer Discretionary" },
-  { name: "Meta", sector: "Technology" },
-  { name: "Tesla", sector: "Automotive" },
-  { name: "NVIDIA", sector: "Technology" },
-  { name: "JPMorgan", sector: "Financial" },
-  { name: "Visa", sector: "Financial" },
-  { name: "Walmart", sector: "Retail" },
-  { name: "Johnson & Johnson", sector: "Healthcare" },
-  { name: "Procter & Gamble", sector: "Consumer Goods" },
-  { name: "Mastercard", sector: "Financial" },
-  { name: "Home Depot", sector: "Retail" },
-  { name: "Chevron", sector: "Energy" },
-  { name: "Coca-Cola", sector: "Consumer Goods" },
-  { name: "Pfizer", sector: "Healthcare" },
-  { name: "Bank of America", sector: "Financial" },
-  { name: "Pepsi", sector: "Consumer Goods" },
-  { name: "Thermo Fisher", sector: "Healthcare" }
-];
+// Transform stock data for autocomplete
+const mockStocks = stockData.map(stock => ({
+  name: stock.name.split(' ')[0], // Use first word of company name
+  sector: "Technology", // Default sector since it's not in the data
+  price: stock.price,
+  change: stock.change,
+  changePercent: stock.changePercent,
+  symbol: stock.symbol
+}));
 
 const whyQuestions = [
   "stocks go up?",
@@ -40,18 +27,6 @@ const whyQuestions = [
   "stock is a good investment?",
   "stock is performing well?"
 ];
-
-interface StockSuggestion {
-  name: string;
-  sector: string;
-}
-
-interface WhyQuestionSuggestion {
-  name: string;
-  question: string;
-}
-
-type Suggestion = StockSuggestion | WhyQuestionSuggestion;
 
 interface InputCopilotProps {
   value: string;
@@ -103,7 +78,7 @@ export function InputCopilot({
       const filteredStocks = mockStocks.filter(
         (stock) => stock.name.toLowerCase().includes(searchTerm)
       );
-      setSearchSuggestions(filteredStocks as StockSuggestion[]);
+      setSearchSuggestions(filteredStocks);
       setShowSuggestions(true);
       setSelectedIndex(-1);
     } else if (newValue.toLowerCase().startsWith("why ")) {
@@ -116,10 +91,14 @@ export function InputCopilot({
         const suggestions = matchingStocks.flatMap(stock => 
           whyQuestions.map(question => ({
             name: stock.name,
-            question: question
+            question: question,
+            price: stock.price,
+            change: stock.change,
+            changePercent: stock.changePercent,
+            symbol: stock.symbol
           }))
         );
-        setSearchSuggestions(suggestions as WhyQuestionSuggestion[]);
+        setSearchSuggestions(suggestions);
         setShowSuggestions(true);
         setSelectedIndex(-1);
       } else {
@@ -177,9 +156,13 @@ export function InputCopilot({
         if (newValue.toLowerCase().startsWith("why ")) {
           const suggestions = whyQuestions.map(question => ({
             name: suggestion.name,
-            question: question
+            question: question,
+            price: suggestion.price,
+            change: suggestion.change,
+            changePercent: suggestion.changePercent,
+            symbol: suggestion.symbol
           }));
-          setSearchSuggestions(suggestions as WhyQuestionSuggestion[]);
+          setSearchSuggestions(suggestions);
           setShowSuggestions(true);
           setSelectedIndex(-1);
         } else {
@@ -219,10 +202,23 @@ export function InputCopilot({
               </div>
               <div className="flex flex-col items-end min-w-0">
                 {!('question' in suggestion) && (
-                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Building2 className="h-3 w-3 flex-shrink-0" />
-                    <span className="truncate">{suggestion.sector}</span>
-                  </span>
+                  <>
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Building2 className="h-3 w-3 flex-shrink-0" />
+                      <span className="truncate">{suggestion.sector}</span>
+                    </span>
+                    <span className={cn(
+                      "flex items-center gap-1 text-xs",
+                      suggestion.change >= 0 ? "text-green-500" : "text-red-500"
+                    )}>
+                      {suggestion.change >= 0 ? (
+                        <ArrowUp className="h-3 w-3 flex-shrink-0" />
+                      ) : (
+                        <ArrowDown className="h-3 w-3 flex-shrink-0" />
+                      )}
+                      <span>{suggestion.changePercent.toFixed(2)}%</span>
+                    </span>
+                  </>
                 )}
               </div>
             </button>
