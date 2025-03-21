@@ -51,6 +51,14 @@ const AiChat = () => {
       content:
         "Because China created a new AI which doesn't need NVIDIA's graphic cards to be as fast as the competitors. They basically provide the same performance with lower cost."
     },
+    {
+      sender: "user",
+      content: "What is the stock of NVIDIA?"
+    },
+    {
+      sender: "ai",
+      content: "NVIDIA is a company that makes graphic cards for computers."
+    }
 
   ];
   const [messages, setMessages] = useState<MessageProps[]>(initialMessages);
@@ -126,14 +134,14 @@ const AiChat = () => {
         </Button>
       </div>
       <div className="flex h-[calc(100%-36px)] flex-col">
-        <ScrollArea className="flex-1">
-          <div className="mr-2.5 mb-2 flex flex-1 flex-col gap-5 px-3 pt-4">
+        <ScrollArea className="flex-1 overflow-y-auto">
+          <div className="flex flex-col gap-5 px-3 pt-4 pb-2">
             {messages.map((message, index) => (
               <Message key={index} {...message} />
             ))}
           </div>
         </ScrollArea>
-        <div className="border-t p-3">
+        <div className="border-t p-3 mt-auto">
           <div className="flex gap-2">
             <InputCopilot
               value={input}
