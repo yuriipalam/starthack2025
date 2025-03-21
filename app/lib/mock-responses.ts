@@ -164,12 +164,7 @@ export const stockResponseMapping: ResponseMapping = {
     response: `${stockName} completed its initial public offering (IPO) on March 15, 2019, raising $2.5B at $45 per share, valuing the company at $18B. The IPO was oversubscribed 8x, reflecting strong investor demand. Key IPO highlights include: 1) Largest tech IPO of 2019, 2) Strong institutional participation with 85% allocation to long-term investors, 3) Initial market cap represented 3.5x revenue multiple. Since IPO, the stock has delivered 280% total return, significantly outperforming both the S&P 500 (+85%) and sector peers (+120%). The company has maintained consistent growth execution, expanding revenue 5x and market share from 15% to 35% in core segments.`,
     sentiment: "positive",
     confidence: 0.95,
-    sources: [
-      "IPO Prospectus",
-      "SEC Filings",
-      "Market Data",
-      "Company History"
-    ]
+    sources: ["IPO Prospectus", "SEC Filings", "Market Data", "Company History"]
   })
 };
 
@@ -179,10 +174,10 @@ export function getStockResponse(
   changePercent: number,
   price: number
 ): StockResponse {
-  console.log("DUDE", question, stockName, changePercent, price)
+  console.log("DUDE", question, stockName, changePercent, price);
   // Check for invalid or unknown stock name
   if (!stockName || stockName.trim() === "") {
-    console.log(!stockName, stockName.trim())
+    console.log(!stockName, stockName.trim());
     return {
       response:
         "I'm sorry, but I don't know what your question refers to. If you have a specific question or need information related to companies, indexes, commodities, or exchange rates, please let me know!",

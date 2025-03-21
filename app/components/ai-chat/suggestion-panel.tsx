@@ -1,4 +1,12 @@
-import { TrendingUp, Building2, ArrowUp, ArrowDown, Info, HelpCircle, LineChart } from "lucide-react";
+import {
+  TrendingUp,
+  Building2,
+  ArrowUp,
+  ArrowDown,
+  Info,
+  HelpCircle,
+  LineChart
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { type Suggestion } from "@/store";
 import { useEffect, useRef } from "react";
