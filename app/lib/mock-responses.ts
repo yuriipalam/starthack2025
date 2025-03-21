@@ -75,6 +75,16 @@ export const stockResponseMapping: ResponseMapping = {
 };
 
 export function getStockResponse(question: string, stockName: string, changePercent: number, price: number): StockResponse {
+  // Check for invalid or unknown stock name
+  if (!stockName || stockName.trim() === '') {
+    return {
+      response: "I'm sorry, but I don't know what your question refers to. If you have a specific question or need information related to companies, indexes, commodities, or exchange rates, please let me know!",
+      sentiment: 'neutral',
+      confidence: 0.9,
+      sources: ['Input Validation']
+    };
+  }
+
   // Find the matching response template based on question keywords
   const matchingKey = Object.keys(stockResponseMapping).find(key => 
     question.toLowerCase().includes(key.toLowerCase())

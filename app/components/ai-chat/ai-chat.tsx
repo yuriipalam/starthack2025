@@ -125,7 +125,7 @@ const AiChat = () => {
 
     // Generate response using mock data if no stock is selected
     const stockData = selectedStock || {
-      name: "EXAMPLE",
+      name: "",
       price: 100,
       changePercent: 2.5
     };
