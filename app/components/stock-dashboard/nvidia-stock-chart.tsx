@@ -173,8 +173,8 @@ export const NvidiaStockChart = () => {
 
   return (
     <div className="w-full rounded-lg bg-card p-6">
-      <h3 className="mb-4 text-lg font-semibold">NVIDIA Stock Price</h3>
-      <div className="h-[400px] w-full">
+      <h3 className="mb-4 text-lg font-semibold">NVIDIA chart based on your request</h3>
+      <div className="h-[300px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={mockData}
