@@ -9,6 +9,13 @@ import { InputCopilot } from "./input-copilot";
 import { getStockResponse } from "@/lib/mock-responses";
 import { stockData } from "@/lib/mock-data";
 
+type MessageType = {
+  sender: "user" | "ai";
+  content: string;
+  isPending?: boolean;
+  type?: "text" | "chart";
+};
+
 const AiChat = () => {
   const isChatOpen = useUiStore((state) => state.isChatOpen);
   const setIsChatOpen = useUiStore((state) => state.setIsChatOpen);
@@ -113,14 +120,14 @@ const AiChat = () => {
   const handleSendMessage = () => {
     if (!input.trim()) return;
 
-    const newMessage = { sender: "user" as const, content: input.trim() };
+    const newMessage = { sender: "user" as const, content: input.trim(), type: "text" };
     setMessages(prev => [...prev, newMessage]);
     setInput("");
 
     // Add a pending message while generating response
     setMessages(prev => [
       ...prev,
-      { sender: "ai" as const, isPending: true }
+      { sender: "ai" as const, isPending: true, type: "text" }
     ]);
 
     // Generate response using mock data if no stock is selected
@@ -129,6 +136,17 @@ const AiChat = () => {
       price: 100,
       changePercent: 2.5
     };
+
+    // Special handling for NVIDIA stock
+    if (selectedStock?.symbol === "NVDA" || input.toLowerCase().includes("nvidia")) {
+      const chartMessage = {
+        sender: "ai" as const,
+        content: "Here's the NVIDIA stock performance chart:",
+        type: "chart"
+      };
+      setMessages(prev => [...prev.slice(0, -1), chartMessage]);
+      return;
+    }
 
     // Get AI response using the stock response generator
     const response = getStockResponse(

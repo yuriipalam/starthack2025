@@ -61,13 +61,12 @@ const generateStockQuestions = (stock: typeof mockStocks[0]): IWhyQuestionSugges
   }
 
   // Volatility/trend questions
-  if (Math.abs(stock.changePercent) > 3) {
+  if (stock.symbol === "NVDA") {
     questions.push(createQuestion("stock showing high volatility?"));
   }
 
   // Add general analysis questions
   questions.push(createQuestion("current market sentiment?"));
-  questions.push(createQuestion("future growth potential?"));
 
   return questions;
 };
