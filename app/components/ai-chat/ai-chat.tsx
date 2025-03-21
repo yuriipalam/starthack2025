@@ -18,6 +18,8 @@ type MessageType = {
 
 const AiChat = () => {
   const isChatOpen = useUiStore((state) => state.isChatOpen);
+  const sendMessage = useUiStore((state) => state.sendMessage);
+  const setSendMessage = useUiStore((state) => state.setSendMessage);
   const setIsChatOpen = useUiStore((state) => state.setIsChatOpen);
   const { width, height } = useUiStore((state) => state.chatSize);
   const { x, y } = useUiStore((state) => state.chatPosition);
@@ -116,12 +118,13 @@ const AiChat = () => {
     }, 100); // Adjust speed as needed
   };
 
-  const handleSendMessage = () => {
-    if (!input.trim()) return;
+  const handleSendMessage = (message?: string, stock?: any) => {
+    const msg = message ?? input;
+    if (!msg.trim()) return;
 
     const newMessage = {
       sender: "user" as const,
-      content: input.trim(),
+      content: msg.trim(),
       type: "text"
     };
     setMessages((prev) => [...prev, newMessage]);
@@ -134,16 +137,17 @@ const AiChat = () => {
     ]);
 
     // Generate response using mock data if no stock is selected
-    const stockData = selectedStock || {
-      name: "",
-      price: 100,
-      changePercent: 2.5
-    };
+    const stockData = selectedStock ||
+      stock || {
+        name: "",
+        price: 100,
+        changePercent: 2.5
+      };
 
     // Special handling for NVIDIA stock
     if (
       selectedStock?.symbol === "NVDA" ||
-      input.toLowerCase().includes("nvidia")
+      msg.toLowerCase().includes("nvidia")
     ) {
       const chartMessage = {
         sender: "ai" as const,
@@ -156,7 +160,7 @@ const AiChat = () => {
 
     // Get AI response using the stock response generator
     const response = getStockResponse(
-      input.trim(),
+      msg.trim(),
       stockData.name,
       stockData.changePercent || 0,
       stockData.price || 0
@@ -209,6 +213,13 @@ const AiChat = () => {
       window.removeEventListener("resize", handleResize);
     };
   });
+
+  useEffect(() => {
+    if (sendMessage) {
+      handleSendMessage(sendMessage.question, sendMessage.stock);
+      setSendMessage(null);
+    }
+  }, [sendMessage]);
 
   return (
     <div

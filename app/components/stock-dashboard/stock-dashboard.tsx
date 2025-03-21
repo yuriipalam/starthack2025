@@ -21,6 +21,7 @@ import {
 } from "@/ui/tooltip";
 import { ArrowRightIcon, BotMessageSquare } from "lucide-react";
 import { Button } from "@/ui/button";
+import { useUiStore } from "@/store";
 
 export function StockDashboard() {
   const [selectedStock, setSelectedStock] = useState(stockData[0]);
@@ -29,6 +30,7 @@ export function StockDashboard() {
   const handleStockSelect = (stock: any) => {
     setSelectedStock(stock);
   };
+  const setSendMessage = useUiStore((state) => state.setSendMessage);
 
   return (
     <div className="flex flex-col">
@@ -51,20 +53,56 @@ export function StockDashboard() {
                         align="start"
                         side="right"
                       >
-                        <Button variant="ghost" size="sm">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            setSendMessage({
+                              question: `Explain the stock price of ${selectedStock.symbol}`,
+                              stock: selectedStock
+                            })
+                          }
+                        >
                           Explain the stock price of {selectedStock.symbol}{" "}
                           <ArrowRightIcon />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            setSendMessage({
+                              question: `Why does the stock price of ${selectedStock.symbol} keep going up?`,
+                              stock: selectedStock
+                            })
+                          }
+                        >
                           Why does the stock price of {selectedStock.symbol}{" "}
                           keep going up?
                           <ArrowRightIcon />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            setSendMessage({
+                              question: `What is the forecast for ${selectedStock.symbol}?`,
+                              stock: selectedStock
+                            })
+                          }
+                        >
                           What is the forecast for {selectedStock.symbol}?{" "}
                           <ArrowRightIcon />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            setSendMessage({
+                              question: `When did ${selectedStock.symbol} go public as IPO?`,
+                              stock: selectedStock
+                            })
+                          }
+                        >
                           When did {selectedStock.symbol} go public as IPO?{" "}
                           <ArrowRightIcon />
                         </Button>

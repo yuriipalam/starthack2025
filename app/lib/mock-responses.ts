@@ -122,6 +122,54 @@ export const stockResponseMapping: ResponseMapping = {
       "ESG Metrics",
       "Capital Allocation Strategy"
     ]
+  }),
+
+  "explain the stock price": (stockName, _, price) => ({
+    response: `${stockName}'s current stock price of $${price} reflects several key factors: 1) Strong fundamentals with revenue growth of 18% YoY and operating margins of 25%, 2) Market position as industry leader with 35% market share in core segments, 3) Robust balance sheet featuring $2.8B in cash reserves and minimal debt (net debt/EBITDA of 0.3x). The company's valuation metrics (P/E: 22x, EV/EBITDA: 15x) are in line with premium growth peers. Recent catalysts include successful product launches (3 new offerings in Q4) and strategic partnerships expanding addressable market by 40%. Technical indicators show healthy momentum with price above key moving averages and strong institutional support (85% ownership).`,
+    sentiment: "positive",
+    confidence: 0.85,
+    sources: [
+      "Financial Reports",
+      "Market Analysis",
+      "Technical Indicators",
+      "Company Filings"
+    ]
+  }),
+
+  "why does the stock price of": (stockName) => ({
+    response: `${stockName}'s sustained upward trajectory is driven by multiple factors: 1) Exceptional execution with 5 consecutive quarters of earnings beats, averaging 12% above consensus, 2) Strategic initiatives delivering results - digital transformation program achieving 30% cost reduction target, 3) Market expansion success with international revenue growing 45% YoY. Key growth drivers include: Strong product pipeline (15 new launches in 2024), expanding customer base (net customer additions +25% YoY), and increasing pricing power (gross margin expansion of 300bps). The company's competitive moat is strengthening through network effects and brand value appreciation. Institutional investors have increased positions by 20% this year, reflecting growing confidence in the growth story.`,
+    sentiment: "positive",
+    confidence: 0.9,
+    sources: [
+      "Quarterly Reports",
+      "Growth Analysis",
+      "Market Research",
+      "Institutional Holdings"
+    ]
+  }),
+
+  "what is the forecast": (stockName) => ({
+    response: `${stockName}'s growth forecast remains robust across key metrics: 1) Revenue growth projected at 20-25% CAGR through 2026, driven by market expansion and new product launches, 2) Margin improvement trajectory targeting 300bps annual expansion through operational efficiency and scale benefits, 3) Strong free cash flow generation expected to reach $5B by 2025, supporting both growth investments and shareholder returns. Key catalysts include: Geographic expansion into 5 new markets, launch of 3 major product platforms, and strategic acquisitions in high-growth segments. Analyst consensus shows 85% Buy ratings with mean price target implying 35% upside. The company's innovation pipeline and market leadership position support sustainable long-term growth.`,
+    sentiment: "positive",
+    confidence: 0.8,
+    sources: [
+      "Analyst Reports",
+      "Company Guidance",
+      "Industry Forecasts",
+      "Growth Strategy Documents"
+    ]
+  }),
+
+  "go public as ipo": (stockName) => ({
+    response: `${stockName} completed its initial public offering (IPO) on March 15, 2019, raising $2.5B at $45 per share, valuing the company at $18B. The IPO was oversubscribed 8x, reflecting strong investor demand. Key IPO highlights include: 1) Largest tech IPO of 2019, 2) Strong institutional participation with 85% allocation to long-term investors, 3) Initial market cap represented 3.5x revenue multiple. Since IPO, the stock has delivered 280% total return, significantly outperforming both the S&P 500 (+85%) and sector peers (+120%). The company has maintained consistent growth execution, expanding revenue 5x and market share from 15% to 35% in core segments.`,
+    sentiment: "positive",
+    confidence: 0.95,
+    sources: [
+      "IPO Prospectus",
+      "SEC Filings",
+      "Market Data",
+      "Company History"
+    ]
   })
 };
 
@@ -131,8 +179,10 @@ export function getStockResponse(
   changePercent: number,
   price: number
 ): StockResponse {
+  console.log("DUDE", question, stockName, changePercent, price)
   // Check for invalid or unknown stock name
   if (!stockName || stockName.trim() === "") {
+    console.log(!stockName, stockName.trim())
     return {
       response:
         "I'm sorry, but I don't know what your question refers to. If you have a specific question or need information related to companies, indexes, commodities, or exchange rates, please let me know!",

@@ -39,6 +39,8 @@ interface UiState {
   setSearchSuggestions: (suggestions: Suggestion[]) => void;
   showSuggestions: boolean;
   setShowSuggestions: (show: boolean) => void;
+  sendMessage: { question: string, stock: any } | null;
+  setSendMessage: (value: { question: string, stock: any } | null) => void;
 }
 
 const INITIAL_CHAT_WIDTH = 600;
@@ -89,7 +91,9 @@ const useUiStore = create<UiState>()(
       setSearchSuggestions: (suggestions) =>
         set({ searchSuggestions: suggestions }),
       showSuggestions: false,
-      setShowSuggestions: (show) => set({ showSuggestions: show })
+      setShowSuggestions: (show) => set({ showSuggestions: show }),
+      sendMessage: null,
+      setSendMessage: (value) => set({ sendMessage: value })
     }),
     {
       name: "ui-store"
