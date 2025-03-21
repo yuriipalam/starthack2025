@@ -12,14 +12,17 @@ export interface MessageProps {
 
 const containsNvidiaStockQuery = (content: string = "") => {
   const lowerContent = content.toLowerCase();
-  return lowerContent.includes("nvidia") && 
-         (lowerContent.includes("stock") || 
-          lowerContent.includes("price") || 
-          lowerContent.includes("shares"));
+  return (
+    lowerContent.includes("nvidia") &&
+    (lowerContent.includes("stock") ||
+      lowerContent.includes("price") ||
+      lowerContent.includes("shares"))
+  );
 };
 
 const Message = (props: MessageProps) => {
-  const showNvidiaChart = props.sender === "ai" && containsNvidiaStockQuery(props.content);
+  const showNvidiaChart =
+    props.sender === "ai" && containsNvidiaStockQuery(props.content);
 
   return props.sender === "user" ? (
     <div className="bg-muted flex max-w-9/12 self-end rounded-md px-3 py-2">

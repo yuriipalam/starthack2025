@@ -69,7 +69,6 @@ const AiChat = () => {
       sender: "ai",
       content: "NVIDIA is a company that makes graphic cards for computers."
     }
-
   ];
   const [messages, setMessages] = useState<MessageProps[]>(initialMessages);
 
@@ -90,10 +89,10 @@ const AiChat = () => {
     let currentIndex = 0;
 
     setIsStreaming(true);
-    
+
     const streamInterval = setInterval(() => {
       if (currentIndex < words.length) {
-        setStreamingMessage(prev => {
+        setStreamingMessage((prev) => {
           const newMessage = prev + words[currentIndex] + " ";
           // Trigger scroll after state update
           setTimeout(scrollToBottom, 0);
@@ -103,9 +102,9 @@ const AiChat = () => {
       } else {
         clearInterval(streamInterval);
         setIsStreaming(false);
-        
+
         // Add the complete message to the messages array
-        setMessages(prev => [
+        setMessages((prev) => [
           ...prev.slice(0, -1), // Remove pending message
           {
             sender: "ai",
@@ -120,12 +119,16 @@ const AiChat = () => {
   const handleSendMessage = () => {
     if (!input.trim()) return;
 
-    const newMessage = { sender: "user" as const, content: input.trim(), type: "text" };
-    setMessages(prev => [...prev, newMessage]);
+    const newMessage = {
+      sender: "user" as const,
+      content: input.trim(),
+      type: "text"
+    };
+    setMessages((prev) => [...prev, newMessage]);
     setInput("");
 
     // Add a pending message while generating response
-    setMessages(prev => [
+    setMessages((prev) => [
       ...prev,
       { sender: "ai" as const, isPending: true, type: "text" }
     ]);
@@ -138,13 +141,16 @@ const AiChat = () => {
     };
 
     // Special handling for NVIDIA stock
-    if (selectedStock?.symbol === "NVDA" || input.toLowerCase().includes("nvidia")) {
+    if (
+      selectedStock?.symbol === "NVDA" ||
+      input.toLowerCase().includes("nvidia")
+    ) {
       const chartMessage = {
         sender: "ai" as const,
         content: "Here's the NVIDIA stock performance chart:",
         type: "chart"
       };
-      setMessages(prev => [...prev.slice(0, -1), chartMessage]);
+      setMessages((prev) => [...prev.slice(0, -1), chartMessage]);
       return;
     }
 
@@ -166,8 +172,8 @@ const AiChat = () => {
     sector: string;
   }) => {
     // Find the actual stock data from mock data
-    const actualStockData = stockData.find(s => s.symbol === stock.symbol);
-    
+    const actualStockData = stockData.find((s) => s.symbol === stock.symbol);
+
     setSelectedStock({
       ...stock,
       price: actualStockData?.price || 0,
@@ -239,13 +245,13 @@ const AiChat = () => {
         <ScrollArea className="flex-1 overflow-y-auto">
           <div className="flex flex-col gap-5 px-3 pt-4 pb-2">
             {messages.map((message, index) => {
-              if (index === messages.length - 1 && message.sender === "ai" && isStreaming) {
+              if (
+                index === messages.length - 1 &&
+                message.sender === "ai" &&
+                isStreaming
+              ) {
                 return (
-                  <Message
-                    key={index}
-                    sender="ai"
-                    content={streamingMessage}
-                  />
+                  <Message key={index} sender="ai" content={streamingMessage} />
                 );
               }
               return <Message key={index} {...message} />;
@@ -253,7 +259,7 @@ const AiChat = () => {
             <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
-        <div className="border-t p-3 mt-auto">
+        <div className="mt-auto border-t p-3">
           <div className="flex gap-2">
             <InputCopilot
               value={input}
@@ -279,4 +285,3 @@ const AiChat = () => {
 };
 
 export { AiChat };
-

@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 export interface StockSuggestion {
   name: string;
@@ -30,10 +30,11 @@ interface UiStore {
 }
 
 export const useUiStore = create<UiStore>((set) => ({
-  searchQuery: '',
+  searchQuery: "",
   searchSuggestions: [],
   showSuggestions: false,
   setSearchQuery: (query) => set({ searchQuery: query }),
-  setSearchSuggestions: (suggestions) => set({ searchSuggestions: suggestions }),
-  setShowSuggestions: (show) => set({ showSuggestions: show }),
-})); 
+  setSearchSuggestions: (suggestions) =>
+    set({ searchSuggestions: suggestions }),
+  setShowSuggestions: (show) => set({ showSuggestions: show })
+}));

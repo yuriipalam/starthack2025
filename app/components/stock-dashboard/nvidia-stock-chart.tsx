@@ -7,85 +7,113 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-  ReferenceDot,
+  ReferenceDot
 } from "recharts";
 import { HelpCircle, TrendingUp, ArrowLeftRight } from "lucide-react";
 import { Button } from "@/ui/button";
 
 // Mock data for NVIDIA stock prices with additional context
 const mockData = [
-  { 
-    date: "2024-01", 
-    price: 480, 
-    high: 495, 
+  {
+    date: "2024-01",
+    price: 480,
+    high: 495,
     low: 470,
     events: "AI chip demand surge",
     volume: "15.2M"
   },
-  { 
-    date: "2024-02", 
-    price: 720, 
-    high: 735, 
+  {
+    date: "2024-02",
+    price: 720,
+    high: 735,
     low: 710,
     events: "New GPU launch",
     volume: "18.5M"
   },
-  { 
-    date: "2024-03", 
-    price: 890, 
-    high: 905, 
+  {
+    date: "2024-03",
+    price: 890,
+    high: 905,
     low: 875,
     events: "Q4 earnings beat",
     volume: "22.1M"
   },
-  { 
-    date: "2024-04", 
-    price: 850, 
-    high: 865, 
+  {
+    date: "2024-04",
+    price: 850,
+    high: 865,
     low: 835,
     events: "Market correction",
     volume: "16.8M"
   },
-  { 
-    date: "2024-05", 
-    price: 920, 
-    high: 945, 
+  {
+    date: "2024-05",
+    price: 920,
+    high: 945,
     low: 905,
     events: "AI partnership announcement",
     volume: "25.3M"
   },
-  { 
-    date: "2024-06", 
-    price: 880, 
-    high: 895, 
+  {
+    date: "2024-06",
+    price: 880,
+    high: 895,
     low: 865,
     events: "Competitor product launch",
     volume: "17.9M"
   },
-  { 
-    date: "2024-07", 
-    price: 940, 
-    high: 960, 
+  {
+    date: "2024-07",
+    price: 940,
+    high: 960,
     low: 925,
     events: "New AI chip reveal",
     volume: "23.7M"
-  },
+  }
 ].map((item) => ({
   ...item,
   price: Number(item.price.toFixed(2)),
   high: Number(item.high.toFixed(2)),
-  low: Number(item.low.toFixed(2)),
+  low: Number(item.low.toFixed(2))
 }));
 
 // Mock market sentiment data
 const marketSentiment = {
-  "2024-01": { bullish: 75, bearish: 25, catalysts: ["AI adoption", "Gaming market growth"] },
-  "2024-02": { bullish: 85, bearish: 15, catalysts: ["Product innovation", "Market leadership"] },
-  "2024-03": { bullish: 90, bearish: 10, catalysts: ["Strong financials", "Industry dominance"] },
-  "2024-04": { bullish: 65, bearish: 35, catalysts: ["Market volatility", "Profit taking"] },
-  "2024-05": { bullish: 88, bearish: 12, catalysts: ["Strategic partnerships", "AI momentum"] },
-  "2024-06": { bullish: 70, bearish: 30, catalysts: ["Competition concerns", "Market share"] },
-  "2024-07": { bullish: 82, bearish: 18, catalysts: ["Innovation pipeline", "AI demand"] },
+  "2024-01": {
+    bullish: 75,
+    bearish: 25,
+    catalysts: ["AI adoption", "Gaming market growth"]
+  },
+  "2024-02": {
+    bullish: 85,
+    bearish: 15,
+    catalysts: ["Product innovation", "Market leadership"]
+  },
+  "2024-03": {
+    bullish: 90,
+    bearish: 10,
+    catalysts: ["Strong financials", "Industry dominance"]
+  },
+  "2024-04": {
+    bullish: 65,
+    bearish: 35,
+    catalysts: ["Market volatility", "Profit taking"]
+  },
+  "2024-05": {
+    bullish: 88,
+    bearish: 12,
+    catalysts: ["Strategic partnerships", "AI momentum"]
+  },
+  "2024-06": {
+    bullish: 70,
+    bearish: 30,
+    catalysts: ["Competition concerns", "Market share"]
+  },
+  "2024-07": {
+    bullish: 82,
+    bearish: 18,
+    catalysts: ["Innovation pipeline", "AI demand"]
+  }
 };
 
 export const NvidiaStockChart = () => {
@@ -96,37 +124,56 @@ export const NvidiaStockChart = () => {
   const handleHighPointClick = (index: number) => {
     setSelectedPoint(index);
     setResponse(null);
-    console.log(`Clicked on data point: ${mockData[index].date} - High: ${mockData[index].high}`);
+    console.log(
+      `Clicked on data point: ${mockData[index].date} - High: ${mockData[index].high}`
+    );
   };
 
-  const getMarketContext = (date: string, currentPrice: number, previousPrice?: number) => {
+  const getMarketContext = (
+    date: string,
+    currentPrice: number,
+    previousPrice?: number
+  ) => {
     const sentiment = marketSentiment[date];
-    const priceChange = previousPrice ? ((currentPrice - previousPrice) / previousPrice * 100).toFixed(1) : "N/A";
+    const priceChange = previousPrice
+      ? (((currentPrice - previousPrice) / previousPrice) * 100).toFixed(1)
+      : "N/A";
     return {
       sentiment,
-      priceChange,
+      priceChange
     };
   };
 
   const handleQuestionClick = async (question: string) => {
     if (selectedPoint === null) {
-      setResponse("Please select a data point first by clicking on one of the high points in the chart.");
+      setResponse(
+        "Please select a data point first by clicking on one of the high points in the chart."
+      );
       return;
     }
 
     setLoading(true);
     try {
       const selectedData = mockData[selectedPoint];
-      const previousData = selectedPoint > 0 ? mockData[selectedPoint - 1] : null;
-      const nextData = selectedPoint < mockData.length - 1 ? mockData[selectedPoint + 1] : null;
-      const context = getMarketContext(selectedData.date, selectedData.high, previousData?.high);
-      
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call delay
-      
+      const previousData =
+        selectedPoint > 0 ? mockData[selectedPoint - 1] : null;
+      const nextData =
+        selectedPoint < mockData.length - 1
+          ? mockData[selectedPoint + 1]
+          : null;
+      const context = getMarketContext(
+        selectedData.date,
+        selectedData.high,
+        previousData?.high
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call delay
+
       let simulatedResponse = "";
-      switch(question) {
+      switch (question) {
         case "why":
-          simulatedResponse = `Analysis for ${selectedData.date}:\n\n` +
+          simulatedResponse =
+            `Analysis for ${selectedData.date}:\n\n` +
             `The stock reached a high of $${selectedData.high} primarily due to ${selectedData.events}. ` +
             `Trading volume was ${selectedData.volume}, with market sentiment being ${context.sentiment.bullish}% bullish. ` +
             `Key catalysts included ${context.sentiment.catalysts.join(" and ")}. ` +
@@ -135,9 +182,17 @@ export const NvidiaStockChart = () => {
           break;
         case "compare":
           if (previousData) {
-            const priceChange = ((selectedData.high - previousData.high) / previousData.high * 100).toFixed(1);
-            const volumeChange = ((parseInt(selectedData.volume) - parseInt(previousData.volume)) / parseInt(previousData.volume) * 100).toFixed(1);
-            simulatedResponse = `Month-over-Month Comparison:\n\n` +
+            const priceChange = (
+              ((selectedData.high - previousData.high) / previousData.high) *
+              100
+            ).toFixed(1);
+            const volumeChange = (
+              ((parseInt(selectedData.volume) - parseInt(previousData.volume)) /
+                parseInt(previousData.volume)) *
+              100
+            ).toFixed(1);
+            simulatedResponse =
+              `Month-over-Month Comparison:\n\n` +
               `• Price Change: ${priceChange}% (${previousData.high} → ${selectedData.high})\n` +
               `• Volume Change: ${volumeChange}% (${previousData.volume} → ${selectedData.volume})\n` +
               `• Previous Event: ${previousData.events}\n` +
@@ -145,15 +200,21 @@ export const NvidiaStockChart = () => {
               `• Sentiment Shift: ${previousData.date}'s ${marketSentiment[previousData.date].bullish}% bullish → ` +
               `${selectedData.date}'s ${context.sentiment.bullish}% bullish`;
           } else {
-            simulatedResponse = "This is the earliest data point available. No previous data for comparison.";
+            simulatedResponse =
+              "This is the earliest data point available. No previous data for comparison.";
           }
           break;
         case "predict":
-          const trend = selectedPoint > 0 
-            ? (selectedData.high > mockData[selectedPoint - 1].high ? "upward" : "downward")
-            : "neutral";
-          const sentiment = context.sentiment.bullish > 70 ? "bullish" : "neutral";
-          simulatedResponse = `Forecast Analysis for ${selectedData.date}:\n\n` +
+          const trend =
+            selectedPoint > 0
+              ? selectedData.high > mockData[selectedPoint - 1].high
+                ? "upward"
+                : "downward"
+              : "neutral";
+          const sentiment =
+            context.sentiment.bullish > 70 ? "bullish" : "neutral";
+          simulatedResponse =
+            `Forecast Analysis for ${selectedData.date}:\n\n` +
             `Based on the current ${trend} trend and ${sentiment} market sentiment (${context.sentiment.bullish}% bullish), ` +
             `the following factors could influence future movement:\n\n` +
             `• Market Catalysts: ${context.sentiment.catalysts.join(", ")}\n` +
@@ -172,8 +233,10 @@ export const NvidiaStockChart = () => {
   };
 
   return (
-    <div className="w-full rounded-lg bg-card p-6">
-      <h3 className="mb-4 text-lg font-semibold">NVIDIA chart based on your request</h3>
+    <div className="bg-card w-full rounded-lg p-6">
+      <h3 className="mb-4 text-lg font-semibold">
+        NVIDIA chart based on your request
+      </h3>
       <div className="h-[300px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
@@ -206,7 +269,7 @@ export const NvidiaStockChart = () => {
                 if (active && payload?.[0]) {
                   const data = payload[0].payload;
                   return (
-                    <div className="rounded-lg bg-background p-2 shadow-lg">
+                    <div className="bg-background rounded-lg p-2 shadow-lg">
                       <p className="text-sm font-medium">
                         Price: ${data.price.toFixed(2)}
                       </p>
@@ -216,7 +279,7 @@ export const NvidiaStockChart = () => {
                       <p className="text-xs text-red-500">
                         Low: ${data.low.toFixed(2)}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-muted-foreground text-xs">
                         {data.date}
                       </p>
                     </div>
@@ -242,7 +305,7 @@ export const NvidiaStockChart = () => {
                 fill={selectedPoint === index ? "#22c55e" : "#76A9FA"}
                 stroke="white"
                 strokeWidth={2}
-                className="cursor-pointer transition-all hover:r-6 hover:fill-green-500"
+                className="hover:r-6 cursor-pointer transition-all hover:fill-green-500"
                 onClick={() => handleHighPointClick(index)}
               />
             ))}
@@ -273,16 +336,16 @@ export const NvidiaStockChart = () => {
 
         {/* Response Display */}
         {loading && (
-          <div className="text-sm text-muted-foreground">
+          <div className="text-muted-foreground text-sm">
             Loading analysis...
           </div>
         )}
         {response && (
-          <div className="rounded-lg bg-background p-4 shadow-sm">
+          <div className="bg-background rounded-lg p-4 shadow-sm">
             <p className="text-sm whitespace-pre-line">{response}</p>
           </div>
         )}
       </div>
     </div>
   );
-}; 
+};
