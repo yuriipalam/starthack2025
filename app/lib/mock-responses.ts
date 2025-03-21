@@ -96,9 +96,9 @@ export function getStockResponse(question: string, stockName: string, changePerc
 
   // Default response if no specific match is found
   return {
-    response: `Based on our analysis, ${stockName} shows mixed indicators. We recommend monitoring the stock's performance and consulting financial advisors for personalized advice.`,
+    response: "I'm sorry, but I don't know what your question refers to. If you have a specific question or need information related to companies, indexes, commodities, or exchange rates, please let me know!",
     sentiment: 'neutral',
-    confidence: 0.6,
-    sources: ['General Analysis']
+    confidence: 0.9,
+    sources: ['Input Validation']
   };
 } 
