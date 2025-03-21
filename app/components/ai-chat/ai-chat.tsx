@@ -110,53 +110,57 @@ const AiChat = () => {
         isChatOpen
           ? "visible opacity-100"
           : "pointer-events-none invisible opacity-0",
-        "bg-popover border-border fixed rounded-xl border px-6 py-10 shadow-lg"
+        "bg-popover border-border fixed rounded-xl border shadow-lg"
       )}
       style={{
         width: `${width}px`,
         height: `${height}px`,
         transform: `translate(${x}px, ${y}px)`
       }}
-      ref={dragRef}
-      onMouseDown={handleMouseDown}
     >
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute top-2 right-2 size-6 cursor-pointer"
-        onClick={() => setIsChatOpen(false)}
+      <div
+        ref={dragRef}
+        onMouseDown={handleMouseDown}
+        className="border-border flex items-center justify-between overflow-hidden border-b px-2 py-1"
       >
-        <X className="text-foreground" />
-      </Button>
-      <div className="size-full cursor-default">
+        <span className="pointer-events-none text-sm select-none">
+          FinAI Assistant
+        </span>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-6 cursor-pointer"
+          onClick={() => setIsChatOpen(false)}
+        >
+          <X className="text-foreground" />
+        </Button>
+      </div>
+      <div className="flex h-[84%] flex-col">
         <ScrollArea className="relative h-full">
-          <div className="mr-3.5 mb-2 flex flex-1 flex-col gap-5">
+          <div className="mr-2.5 mb-2 flex flex-1 flex-col gap-5 px-3 pt-4">
             {messages.map((message, index) => (
               <Message key={index} {...message} />
             ))}
           </div>
         </ScrollArea>
-      </div>
-      <div
-        className="flex size-full cursor-default flex-col"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="flex gap-2">
-          <InputCopilot
-            value={input}
-            onChange={setInput}
-            onSelect={handleStockSelect}
-            placeholder="Type your message... Use @ to search stocks"
-            className="flex-1"
-          />
-          <Button
-            className=""
-            onClick={handleSendMessage}
-            disabled={!input.trim()}
-            size="icon"
-          >
-            <Send />
-          </Button>
+        <div className="flex size-full cursor-default flex-col px-3">
+          <div className="flex gap-2">
+            <InputCopilot
+              value={input}
+              onChange={setInput}
+              onSelect={handleStockSelect}
+              placeholder="Type your message... Use @ to search stocks"
+              className="flex-1"
+            />
+            <Button
+              className="cursor-pointer"
+              onClick={handleSendMessage}
+              disabled={!input.trim()}
+              size="icon"
+            >
+              <Send />
+            </Button>
+          </div>
         </div>
       </div>
     </div>
