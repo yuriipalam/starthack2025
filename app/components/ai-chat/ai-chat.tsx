@@ -86,7 +86,12 @@ const AiChat = () => {
     
     const streamInterval = setInterval(() => {
       if (currentIndex < words.length) {
-        setStreamingMessage(prev => prev + words[currentIndex] + " ");
+        setStreamingMessage(prev => {
+          const newMessage = prev + words[currentIndex] + " ";
+          // Trigger scroll after state update
+          setTimeout(scrollToBottom, 0);
+          return newMessage;
+        });
         currentIndex++;
       } else {
         clearInterval(streamInterval);
@@ -154,12 +159,20 @@ const AiChat = () => {
   };
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
   };
 
+  // Scroll when messages change
   useEffect(() => {
     scrollToBottom();
-  }, [messages]); // Scroll when messages change
+  }, [messages]);
+
+  // Scroll when streaming message updates
+  useEffect(() => {
+    if (isStreaming && streamingMessage) {
+      scrollToBottom();
+    }
+  }, [streamingMessage, isStreaming]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -247,3 +260,4 @@ const AiChat = () => {
 };
 
 export { AiChat };
+
