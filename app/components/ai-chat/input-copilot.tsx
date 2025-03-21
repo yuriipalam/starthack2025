@@ -2,15 +2,18 @@ import React, { useRef, useEffect } from "react";
 import { Input } from "@/ui/input";
 import { cn } from "@/lib/utils";
 import { useUiStore } from "@/store";
-import type { StockSuggestion as IStockSuggestion, WhyQuestionSuggestion as IWhyQuestionSuggestion } from "@/store";
+import type {
+  StockSuggestion as IStockSuggestion,
+  WhyQuestionSuggestion as IWhyQuestionSuggestion
+} from "@/store";
 import { stockData } from "@/lib/mock-data";
 import { SuggestionPanel } from "./suggestion-panel";
 
 type Suggestion = IStockSuggestion | IWhyQuestionSuggestion;
 
 // Transform stock data for autocomplete
-const mockStocks = stockData.map(stock => ({
-  name: stock.name.split(' ')[0], // Use first word of company name
+const mockStocks = stockData.map((stock) => ({
+  name: stock.name.split(" ")[0], // Use first word of company name
   sector: "Technology", // Default sector since it's not in the data
   price: stock.price,
   change: stock.change,
@@ -27,7 +30,9 @@ interface InputCopilotProps {
 }
 
 // Function to analyze stock performance and generate relevant questions
-const generateStockQuestions = (stock: typeof mockStocks[0]): IWhyQuestionSuggestion[] => {
+const generateStockQuestions = (
+  stock: (typeof mockStocks)[0]
+): IWhyQuestionSuggestion[] => {
   // Create base question object
   const createQuestion = (question: string) => ({
     name: stock.name,
@@ -42,12 +47,20 @@ const generateStockQuestions = (stock: typeof mockStocks[0]): IWhyQuestionSugges
 
   // Price movement analysis
   if (stock.change > 0) {
-    questions.push(createQuestion(`stock price increased by ${stock.changePercent.toFixed(2)}%?`));
+    questions.push(
+      createQuestion(
+        `stock price increased by ${stock.changePercent.toFixed(2)}%?`
+      )
+    );
     if (stock.changePercent > 5) {
       questions.push(createQuestion("stock had such a significant rise?"));
     }
   } else if (stock.change < 0) {
-    questions.push(createQuestion(`stock price decreased by ${Math.abs(stock.changePercent).toFixed(2)}%?`));
+    questions.push(
+      createQuestion(
+        `stock price decreased by ${Math.abs(stock.changePercent).toFixed(2)}%?`
+      )
+    );
     if (stock.changePercent < -5) {
       questions.push(createQuestion("stock had such a significant drop?"));
     }
@@ -92,7 +105,10 @@ export function InputCopilot({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (inputRef.current && !inputRef.current.contains(event.target as Node)) {
+      if (
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
         setShowSuggestions(false);
       }
     };
@@ -107,12 +123,13 @@ export function InputCopilot({
     setSearchQuery(newValue);
 
     // Check if there's an @ symbol anywhere in the string
-    const atSymbolIndex = newValue.lastIndexOf('@');
+    const atSymbolIndex = newValue.lastIndexOf("@");
     if (atSymbolIndex !== -1) {
       const searchTerm = newValue.slice(atSymbolIndex + 1).toLowerCase();
       const filteredStocks = mockStocks.filter(
-        (stock) => stock.name.toLowerCase().includes(searchTerm) || 
-                   stock.symbol.toLowerCase().includes(searchTerm)
+        (stock) =>
+          stock.name.toLowerCase().includes(searchTerm) ||
+          stock.symbol.toLowerCase().includes(searchTerm)
       );
       setSearchSuggestions(filteredStocks);
       setShowSuggestions(true);
@@ -123,11 +140,11 @@ export function InputCopilot({
       if (whyMatch) {
         const stockName = whyMatch[1];
         const matchingStocks = mockStocks.filter(
-          (stock) => 
-            stock.name.toLowerCase() === stockName || 
+          (stock) =>
+            stock.name.toLowerCase() === stockName ||
             stock.symbol.toLowerCase() === stockName
         );
-        
+
         if (matchingStocks.length > 0) {
           const suggestions = generateStockQuestions(matchingStocks[0]);
           setSearchSuggestions(suggestions);
@@ -150,7 +167,7 @@ export function InputCopilot({
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
-        setSelectedIndex((prev) => 
+        setSelectedIndex((prev) =>
           prev < searchSuggestions.length - 1 ? prev + 1 : prev
         );
         break;
@@ -172,22 +189,25 @@ export function InputCopilot({
     }
   };
 
-  const handleSuggestionSelect = (suggestion: IStockSuggestion | IWhyQuestionSuggestion) => {
-    if ('question' in suggestion) {
+  const handleSuggestionSelect = (
+    suggestion: IStockSuggestion | IWhyQuestionSuggestion
+  ) => {
+    if ("question" in suggestion) {
+      // Handle question suggestion
       onChange(`why ${suggestion.name} ${suggestion.question}`);
       setShowSuggestions(false);
       setSearchSuggestions([]);
     } else {
-      // Find the last @ symbol position
-      const atSymbolIndex = value.lastIndexOf('@');
+      // Handle stock suggestion
+      const atSymbolIndex = value.lastIndexOf("@");
       if (atSymbolIndex !== -1) {
-        // Replace everything after the @ symbol with the selected company
         const newValue = value.slice(0, atSymbolIndex) + `@${suggestion.name} `;
         onChange(newValue);
-        
-        // If this was after "why", show why questions
-        if (newValue.toLowerCase().startsWith("why ")) {
-          const suggestions = generateStockQuestions(suggestion as typeof mockStocks[0]);
+
+        // Show why questions after selecting a stock
+        const stockData = mockStocks.find((s) => s.name === suggestion.name);
+        if (stockData) {
+          const suggestions = generateStockQuestions(stockData);
           setSearchSuggestions(suggestions);
           setShowSuggestions(true);
           setSelectedIndex(-1);

@@ -16,7 +16,7 @@ interface StockSuggestion {
   sector: string;
 }
 
-interface WhyQuestionSuggestion {
+export interface WhyQuestionSuggestion {
   name: string;
   question: string;
 }
