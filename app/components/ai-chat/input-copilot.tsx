@@ -25,6 +25,7 @@ interface InputCopilotProps {
   value: string;
   onChange: (value: string) => void;
   onSelect?: (suggestion: IStockSuggestion | IWhyQuestionSuggestion) => void;
+  sendMessage: () => void;
   placeholder?: string;
   className?: string;
 }
@@ -88,6 +89,7 @@ export function InputCopilot({
   value,
   onChange,
   onSelect,
+  sendMessage,
   placeholder = "Type @ to search stocks...",
   className
 }: InputCopilotProps) {
@@ -162,8 +164,10 @@ export function InputCopilot({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!showSuggestions) return;
-
+    if (!showSuggestions && e.key === "Enter") {
+      sendMessage();
+      return;
+    }
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();

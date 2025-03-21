@@ -259,6 +259,7 @@ const AiChat = () => {
               value={input}
               onChange={setInput}
               onSelect={handleStockSelect}
+              sendMessage={handleSendMessage}
               placeholder="Type your message... Use @ to search stocks"
               className="flex-1"
             />
