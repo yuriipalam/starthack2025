@@ -39,66 +39,57 @@ interface UiState {
   setSearchSuggestions: (suggestions: Suggestion[]) => void;
   showSuggestions: boolean;
   setShowSuggestions: (show: boolean) => void;
-  sendMessage: { question: string, stock: any } | null;
-  setSendMessage: (value: { question: string, stock: any } | null) => void;
+  sendMessage: { question: string; stock: any } | null;
+  setSendMessage: (value: { question: string; stock: any } | null) => void;
 }
 
 const INITIAL_CHAT_WIDTH = 600;
 const INITIAL_CHAT_HEIGHT = 800;
 
-const useUiStore = create<UiState>()(
-  persist(
-    (set) => ({
-      isChatOpen: false,
-      setIsChatOpen: (value) =>
-        set((state) => ({
-          isChatOpen:
-            typeof value === "function"
-              ? (value as (prev: boolean) => boolean)(state.isChatOpen)
-              : value
-        })),
-      chatSize: { width: INITIAL_CHAT_WIDTH, height: INITIAL_CHAT_HEIGHT },
-      setChatSize: (value) =>
-        set((state) => ({
-          chatSize:
-            typeof value === "function"
-              ? (value as (prev: ChatSize) => ChatSize)(state.chatSize)
-              : value
-        })),
+const useUiStore = create<UiState>()((set) => ({
+  isChatOpen: false,
+  setIsChatOpen: (value) =>
+    set((state) => ({
+      isChatOpen:
+        typeof value === "function"
+          ? (value as (prev: boolean) => boolean)(state.isChatOpen)
+          : value
+    })),
+  chatSize: { width: INITIAL_CHAT_WIDTH, height: INITIAL_CHAT_HEIGHT },
+  setChatSize: (value) =>
+    set((state) => ({
+      chatSize:
+        typeof value === "function"
+          ? (value as (prev: ChatSize) => ChatSize)(state.chatSize)
+          : value
+    })),
+  chatPosition: {
+    x: window.innerWidth - INITIAL_CHAT_WIDTH - 20,
+    y: window.innerHeight - INITIAL_CHAT_HEIGHT - 20
+  },
+  setChatPosition: (value) =>
+    set((state) => ({
+      chatPosition:
+        typeof value === "function"
+          ? (value as (prev: ChatPosition) => ChatPosition)(state.chatPosition)
+          : value
+    })),
+  resetChatPosition: () =>
+    set({
       chatPosition: {
         x: window.innerWidth - INITIAL_CHAT_WIDTH - 20,
         y: window.innerHeight - INITIAL_CHAT_HEIGHT - 20
-      },
-      setChatPosition: (value) =>
-        set((state) => ({
-          chatPosition:
-            typeof value === "function"
-              ? (value as (prev: ChatPosition) => ChatPosition)(
-                  state.chatPosition
-                )
-              : value
-        })),
-      resetChatPosition: () =>
-        set({
-          chatPosition: {
-            x: window.innerWidth - INITIAL_CHAT_WIDTH - 20,
-            y: window.innerHeight - INITIAL_CHAT_HEIGHT - 20
-          }
-        }),
-      searchQuery: "",
-      setSearchQuery: (query) => set({ searchQuery: query }),
-      searchSuggestions: [],
-      setSearchSuggestions: (suggestions) =>
-        set({ searchSuggestions: suggestions }),
-      showSuggestions: false,
-      setShowSuggestions: (show) => set({ showSuggestions: show }),
-      sendMessage: null,
-      setSendMessage: (value) => set({ sendMessage: value })
+      }
     }),
-    {
-      name: "ui-store"
-    }
-  )
-);
+  searchQuery: "",
+  setSearchQuery: (query) => set({ searchQuery: query }),
+  searchSuggestions: [],
+  setSearchSuggestions: (suggestions) =>
+    set({ searchSuggestions: suggestions }),
+  showSuggestions: false,
+  setShowSuggestions: (show) => set({ showSuggestions: show }),
+  sendMessage: null,
+  setSendMessage: (value) => set({ sendMessage: value })
+}));
 
 export { useUiStore, type StockSuggestion };
