@@ -18,19 +18,6 @@ const mockStocks = stockData.map(stock => ({
   symbol: stock.symbol
 }));
 
-const whyQuestions = [
-  "stocks go up?",
-  "stocks go down?",
-  "stock price is high?",
-  "stock price is low?",
-  "stock is volatile?",
-  "stock is trending?",
-  "stock is popular?",
-  "stock is risky?",
-  "stock is a good investment?",
-  "stock is performing well?"
-];
-
 interface InputCopilotProps {
   value: string;
   onChange: (value: string) => void;
@@ -38,6 +25,52 @@ interface InputCopilotProps {
   placeholder?: string;
   className?: string;
 }
+
+// Function to analyze stock performance and generate relevant questions
+const generateStockQuestions = (stock: typeof mockStocks[0]): IWhyQuestionSuggestion[] => {
+  // Create base question object
+  const createQuestion = (question: string) => ({
+    name: stock.name,
+    question,
+    price: stock.price,
+    change: stock.change,
+    changePercent: stock.changePercent,
+    symbol: stock.symbol
+  });
+
+  const questions: IWhyQuestionSuggestion[] = [];
+
+  // Price movement analysis
+  if (stock.change > 0) {
+    questions.push(createQuestion(`stock price increased by ${stock.changePercent.toFixed(2)}%?`));
+    if (stock.changePercent > 5) {
+      questions.push(createQuestion("stock had such a significant rise?"));
+    }
+  } else if (stock.change < 0) {
+    questions.push(createQuestion(`stock price decreased by ${Math.abs(stock.changePercent).toFixed(2)}%?`));
+    if (stock.changePercent < -5) {
+      questions.push(createQuestion("stock had such a significant drop?"));
+    }
+  }
+
+  // Price level analysis
+  if (stock.price > 100) {
+    questions.push(createQuestion("stock price is relatively high?"));
+  } else if (stock.price < 20) {
+    questions.push(createQuestion("stock price is relatively low?"));
+  }
+
+  // Volatility/trend questions
+  if (Math.abs(stock.changePercent) > 3) {
+    questions.push(createQuestion("stock showing high volatility?"));
+  }
+
+  // Add general analysis questions
+  questions.push(createQuestion("current market sentiment?"));
+  questions.push(createQuestion("future growth potential?"));
+
+  return questions;
+};
 
 export function InputCopilot({
   value,
@@ -79,38 +112,36 @@ export function InputCopilot({
     if (atSymbolIndex !== -1) {
       const searchTerm = newValue.slice(atSymbolIndex + 1).toLowerCase();
       const filteredStocks = mockStocks.filter(
-        (stock) => stock.name.toLowerCase().includes(searchTerm)
+        (stock) => stock.name.toLowerCase().includes(searchTerm) || 
+                   stock.symbol.toLowerCase().includes(searchTerm)
       );
       setSearchSuggestions(filteredStocks);
       setShowSuggestions(true);
       setSelectedIndex(-1);
-    } else if (newValue.toLowerCase().startsWith("why ")) {
-      const searchTerm = newValue.slice(4).toLowerCase();
-      const matchingStocks = mockStocks.filter(
-        (stock) => stock.name.toLowerCase() === searchTerm
-      );
-      
-      if (matchingStocks.length > 0) {
-        const suggestions = matchingStocks.flatMap(stock => 
-          whyQuestions.map(question => ({
-            name: stock.name,
-            question: question,
-            price: stock.price,
-            change: stock.change,
-            changePercent: stock.changePercent,
-            symbol: stock.symbol
-          }))
+    } else {
+      // Check for "why {stock}" pattern
+      const whyMatch = newValue.toLowerCase().match(/^why\s+(\w+)\s*$/);
+      if (whyMatch) {
+        const stockName = whyMatch[1];
+        const matchingStocks = mockStocks.filter(
+          (stock) => 
+            stock.name.toLowerCase() === stockName || 
+            stock.symbol.toLowerCase() === stockName
         );
-        setSearchSuggestions(suggestions);
-        setShowSuggestions(true);
-        setSelectedIndex(-1);
+        
+        if (matchingStocks.length > 0) {
+          const suggestions = generateStockQuestions(matchingStocks[0]);
+          setSearchSuggestions(suggestions);
+          setShowSuggestions(true);
+          setSelectedIndex(-1);
+        } else {
+          setShowSuggestions(false);
+          setSearchSuggestions([]);
+        }
       } else {
         setShowSuggestions(false);
         setSearchSuggestions([]);
       }
-    } else {
-      setShowSuggestions(false);
-      setSearchSuggestions([]);
     }
   };
 
@@ -157,14 +188,7 @@ export function InputCopilot({
         
         // If this was after "why", show why questions
         if (newValue.toLowerCase().startsWith("why ")) {
-          const suggestions = whyQuestions.map(question => ({
-            name: suggestion.name,
-            question: question,
-            price: suggestion.price,
-            change: suggestion.change,
-            changePercent: suggestion.changePercent,
-            symbol: suggestion.symbol
-          }));
+          const suggestions = generateStockQuestions(suggestion as typeof mockStocks[0]);
           setSearchSuggestions(suggestions);
           setShowSuggestions(true);
           setSelectedIndex(-1);

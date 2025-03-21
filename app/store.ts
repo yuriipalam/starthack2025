@@ -41,7 +41,7 @@ interface UiState {
   setShowSuggestions: (show: boolean) => void;
 }
 
-const INITIAL_CHAT_WIDTH = 400;
+const INITIAL_CHAT_WIDTH = 800;
 const INITIAL_CHAT_HEIGHT = 500;
 
 const useUiStore = create<UiState>()(
