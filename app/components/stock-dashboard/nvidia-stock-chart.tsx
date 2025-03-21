@@ -9,6 +9,8 @@ import {
   YAxis,
   ReferenceDot,
 } from "recharts";
+import { HelpCircle, TrendingUp, ArrowLeftRight } from "lucide-react";
+import { Button } from "@/ui/button";
 
 // Mock data for NVIDIA stock prices with additional context
 const mockData = [
@@ -251,27 +253,22 @@ export const NvidiaStockChart = () => {
       {/* Analysis Section */}
       <div className="mt-6 space-y-4">
         <div className="flex flex-wrap gap-3">
-          <button
+          <Button
             onClick={() => handleQuestionClick("why")}
-            className="rounded-md bg-blue-500 px-4 py-2 text-sm text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+            variant="outline"
             disabled={loading}
           >
+            <HelpCircle className="h-4 w-4" />
             Why this change?
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => handleQuestionClick("compare")}
-            className="rounded-md bg-green-500 px-4 py-2 text-sm text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50"
+            variant="outline"
             disabled={loading}
           >
+            <ArrowLeftRight className="h-4 w-4" />
             Compare to Previous
-          </button>
-          <button
-            onClick={() => handleQuestionClick("predict")}
-            className="rounded-md bg-purple-500 px-4 py-2 text-sm text-white hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50"
-            disabled={loading}
-          >
-            Predict Next Movement
-          </button>
+          </Button>
         </div>
 
         {/* Response Display */}
