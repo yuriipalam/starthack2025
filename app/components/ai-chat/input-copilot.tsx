@@ -1,11 +1,12 @@
 import React, { useRef, useEffect } from "react";
 import { Input } from "@/ui/input";
 import { cn } from "@/lib/utils";
-import { useUiStore, StockSuggestion, WhyQuestionSuggestion } from "@/store";
+import { useUiStore } from "@/store";
+import type { StockSuggestion as IStockSuggestion, WhyQuestionSuggestion as IWhyQuestionSuggestion } from "@/store";
 import { stockData } from "@/lib/mock-data";
 import { SuggestionPanel } from "./suggestion-panel";
 
-type Suggestion = StockSuggestion | WhyQuestionSuggestion;
+type Suggestion = IStockSuggestion | IWhyQuestionSuggestion;
 
 // Transform stock data for autocomplete
 const mockStocks = stockData.map(stock => ({
@@ -33,7 +34,7 @@ const whyQuestions = [
 interface InputCopilotProps {
   value: string;
   onChange: (value: string) => void;
-  onSelect?: (suggestion: Suggestion) => void;
+  onSelect?: (suggestion: IStockSuggestion | IWhyQuestionSuggestion) => void;
   placeholder?: string;
   className?: string;
 }
@@ -141,7 +142,7 @@ export function InputCopilot({
     }
   };
 
-  const handleSuggestionSelect = (suggestion: Suggestion) => {
+  const handleSuggestionSelect = (suggestion: IStockSuggestion | IWhyQuestionSuggestion) => {
     if ('question' in suggestion) {
       onChange(`why ${suggestion.name} ${suggestion.question}`);
       setShowSuggestions(false);

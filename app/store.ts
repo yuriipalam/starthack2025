@@ -97,4 +97,4 @@ const useUiStore = create<UiState>()(
   )
 );
 
-export { useUiStore };
+export { useUiStore, type StockSuggestion };
