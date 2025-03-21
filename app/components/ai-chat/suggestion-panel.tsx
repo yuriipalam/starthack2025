@@ -1,4 +1,4 @@
-import { TrendingUp, Building2, ArrowUp, ArrowDown } from "lucide-react";
+import { TrendingUp, Building2, ArrowUp, ArrowDown, Info, HelpCircle, LineChart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { type Suggestion } from "@/store";
 import { useEffect, useRef } from "react";
@@ -57,7 +57,11 @@ export function SuggestionPanel({
           onClick={() => onSelect(suggestion)}
         >
           <div className="flex min-w-0 items-center gap-2">
-            <TrendingUp className="text-muted-foreground h-4 w-4 flex-shrink-0" />
+            {!("question" in suggestion) ? (
+              <TrendingUp className="text-muted-foreground h-4 w-4 flex-shrink-0" />
+            ) : (
+              <HelpCircle className="text-muted-foreground h-4 w-4 flex-shrink-0" />
+            )}
             <span className="truncate font-medium">
               {"question" in suggestion
                 ? `why ${suggestion.name} ${suggestion.question}`
